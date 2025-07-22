@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Local Storage Auditor",
+  "version": "1.0",
+  "description": "Audits and displays local storage keys and values for the current website.",
+  "permissions": ["scripting", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

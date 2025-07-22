@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Local Storage Auditor</title>
+    <!-- Segoe UI font and Fluent UI styles -->
+    <style>
+        :root {
+            /* Edge Extension Menu Colors */
+            --fluent-accent: #0067c0;
+            --fluent-accent-hover: #005a9e;
+            --fluent-bg: #2b2b2b;
+            --fluent-surface: #2b2b2b;
+            --fluent-border: #444;
+            --fluent-text: #fff;
+            --fluent-text-secondary: #b3b3b3;
+            --fluent-radius: 8px;
+            --fluent-shadow: none;
+            --fluent-btn-bg: #393939;
+            --fluent-btn-bg-hover: #444;
+            --fluent-btn-text: #fff;
+            --fluent-btn-disabled: #666;
+            --fluent-save-btn-bg: #393939;
+            --fluent-save-btn-hover: #444;
+            --fluent-icon-color: #b3b3b3;
+        }
+        /* No separate dark mode: use menu colors always */
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: var(--fluent-bg);
+            color: var(--fluent-text);
+            font-size: 14px;
+            font-weight: 400;
+            min-width: 320px;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin: 0;
+            padding: 0;
+            max-width: 100vw;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+        }
+        h2 {
+            font-weight: 400;
+            margin: 0 0 0 0;
+            color: var(--fluent-text);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 0 0 12px;
+            height: 36px;
+            letter-spacing: 0.01em;
+        }
+        .fluent-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--fluent-btn-bg);
+            color: var(--fluent-btn-text);
+            border: none;
+            border-radius: var(--fluent-radius);
+            padding: 8px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            transition: background 0.2s;
+            margin-bottom: 16px;
+        }
+        .fluent-btn:hover {
+            background: var(--fluent-btn-bg-hover);
+        }
+        .fluent-btn:disabled {
+            background: var(--fluent-btn-disabled);
+            cursor: not-allowed;
+        }
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            max-height: 320px;
+            resize: vertical;
+            font-family: Consolas, 'Segoe UI Mono', 'Menlo', 'Monaco', monospace;
+            font-size: 1em;
+            padding: 10px;
+            border-radius: var(--fluent-radius);
+            border: 1.5px solid var(--fluent-border);
+            box-sizing: border-box;
+            background: var(--fluent-surface);
+            color: var(--fluent-text);
+            outline: none;
+            margin-bottom: 12px;
+            transition: border 0.2s, background 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        textarea:focus {
+            border: 1.5px solid var(--fluent-accent);
+            background: #f8fafc;
+        }
+        @media (prefers-color-scheme: dark) {
+            textarea:focus {
+                background: #23272e;
+            }
+        }
+        .fluent-save-btn {
+            background: var(--fluent-save-btn-bg);
+            color: #fff;
+            border: none;
+            border-radius: var(--fluent-radius);
+            padding: 6px 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-left: 4px;
+        }
+        .fluent-save-btn:hover {
+            background: var(--fluent-save-btn-hover);
+        }
+        .fluent-save-btn:disabled {
+            background: var(--fluent-btn-disabled);
+            cursor: not-allowed;
+        }
+        #results {
+            margin: 0;
+            min-height: 40px;
+            padding: 0 12px 12px 12px;
+        }
+        .fluent-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 4px;
+            color: var(--fluent-icon-color);
+            fill: none;
+        }
+        /* Consistent input and button focus */
+        input:focus, button:focus, textarea:focus {
+            outline: 2px solid var(--fluent-accent);
+            outline-offset: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>
+            <svg class="fluent-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M4.25 7a.75.75 0 0 0 1.5 0h-1.5Zm1.85-1.111a.75.75 0 0 0-.286-.694.75.75 0 0 0-.313.318l.599.376Zm2.933-.737a.75.75 0 0 0-.076.746c.005-.001.01-.001.015-.002l.061-.744Zm2.5-.152a.75.75 0 0 0-.001 1.5h.001v-1.5Zm.933 0v1.5h.001a.75.75 0 0 0-.001-1.5Zm2.5.152a.75.75 0 0 0-.076-.746l-.061.744c.005.001.01.001.015.002Zm2.934.737a.75.75 0 0 0-.313-.318.75.75 0 0 0-.286.694l.599-.376ZM18.25 7a.75.75 0 0 0 1.5 0h-1.5ZM5.75 7a.75.75 0 0 0-1.5 0h1.5Zm1.164 1.414a.75.75 0 0 0-.22.717c.007.002.014.004.021.006l.199-.723Zm4.619.586v-.75h-.011l.011.75Zm.933 0 .011-.75h-.011v.75Zm4.62-.586a.75.75 0 0 0-.22-.717l-.199.723c.007-.002.014-.004.021-.006ZM19.75 7a.75.75 0 0 0-1.5 0h1.5ZM5.75 7a.75.75 0 0 0-1.5 0h1.5ZM4.25 12a.75.75 0 0 0 1.5 0h-1.5Zm15.5 0a.75.75 0 0 0-1.5 0h1.5ZM5.75 12a.75.75 0 0 0-1.5 0h1.5Zm1.164 1.414a.75.75 0 0 0-.22.717c.007.002.014.004.021.006l.199-.723Zm4.619.586v-.75h-.011l.011.75Zm.933 0 .011-.75h-.011v.75Zm4.62-.586a.75.75 0 0 0-.22-.717l-.199.723c.007-.002.014-.004.021-.006ZM19.75 12a.75.75 0 0 0-1.5 0h1.5ZM5.75 12a.75.75 0 0 0-1.5 0h1.5Zm1.164 6.414a.75.75 0 0 0-.22.717c.007.002.014.004.021.006l.199-.723Zm4.619.586v-.75h-.011l.011.75Zm.933 0 .011-.75h-.011v.75Zm4.62-.586a.75.75 0 0 0-.22-.717l-.199.723c.007-.002.014-.004.021-.006ZM19.75 12a.75.75 0 0 0-1.5 0h1.5ZM5.75 7c0 .058-.032.042.063-.054.099-.1.286-.232.599-.376l-.625-1.363c-.404.185-.767.408-1.039.682-.276.277-.499.652-.499 1.111h1.5Zm1.635-.417c.87-.358 1.787-.589 2.723-.684l-.153-1.492c-1.08.11-2.138.376-3.142.789l.572 1.387Zm.74-.686c.798-.099 1.602-.148 2.406-.147l.002-1.5c-.867-.002-1.733.051-2.593.157l.184 1.488Zm2.408.147h.933v-1.5h-.933v1.5Zm.934 0c.804-.001 1.608.048 2.406.147l.184-1.488c-.86-.106-1.726-.159-2.593-.157l.002 1.5Zm2.473.148c.937.095 1.854.326 2.724.684l.572-1.387c-1.004-.413-2.062-.679-3.142-.789l-.153 1.492Zm2.698.418c.313.144.5.276.599.376.095.096.063.112.063.054h1.5c0-.459-.223-.834-.499-1.111-.272-.274-.635-.497-1.039-.682l-.625 1.363ZM4.25 7c0 .614.396 1.069.801 1.369.42.311.987.563 1.643.763l.439-1.434c-.57-.175-.959-.365-1.189-.535-.245-.181-.193-.246-.193-.162h-1.5Zm2.466 2.137c1.573.43 3.198.636 4.828.612l-.022-1.5c-1.489.022-2.974-.167-4.41-.56l-.396 1.447Zm4.817.613h.933v-1.5h-.933v1.5Zm.922-.001c1.63.025 3.256-.182 4.829-.612l-.396-1.447c-1.436.393-2.921.582-4.41.56l-.022 1.5Zm4.851-.613c.656-.2 1.223-.452 1.643-.763.405-.3.801-.755.801-1.369h-1.5c0-.083.052-.019-.193.162-.23.17-.619.36-1.189.535l.439 1.434ZM4.25 7v5h1.5V7h-1.5Zm14 0v5h1.5V7h-1.5ZM4.25 12c0 .614.396 1.069.801 1.369.42.311.987.563 1.643.763l.439-1.434c-.57-.175-.959-.365-1.189-.535-.245-.181-.193-.246-.193-.162h-1.5Zm2.466 2.137c1.573.43 3.198.636 4.828.612l-.022-1.5c-1.489.022-2.974-.167-4.41-.56l-.396 1.447Zm4.817.613h.933v-1.5h-.933v1.5Zm.922-.001c1.63.025 3.256-.182 4.829-.612l-.396-1.447c-1.436.393-2.921.582-4.41.56l-.022 1.5Zm4.851-.613c.656-.2 1.223-.452 1.643-.763.405-.3.801-.755.801-1.369h-1.5c0-.083.052-.019-.193.162-.23.17-.619.36-1.189.535l.439 1.434ZM4.25 12v5h1.5v-5h-1.5Zm0 5c0 .614.396 1.069.801 1.369.42.311.987.563 1.643.763l.439-1.434c-.57-.175-.959-.365-1.189-.535-.245-.181-.193-.246-.193-.162h-1.5Zm2.466 2.137c1.573.43 3.198.636 4.828.612l-.022-1.5c-1.489.022-2.974-.167-4.41-.56l-.396 1.447Zm4.817.613h.933v-1.5h-.933v1.5Zm.922-.001c1.63.025 3.256-.182 4.829-.612l-.396-1.447c-1.436.393-2.921.582-4.41.56l-.022 1.5Zm4.851-.613c.656-.2 1.223-.452 1.643-.763.405-.3.801-.755.801-1.369h-1.5c0-.083.052-.019-.193.162-.23.17-.619.36-1.189.535l.439 1.434ZM19.75 17v-5h-1.5v5h1.5Z" fill="currentColor"/>
+            </svg>
+            <span style="flex:1 1 auto;">Local Storage Audit</span>
+            <button id="refreshBtn" title="Refresh" style="background:none;border:none;padding:0 8px 0 0;cursor:pointer;align-self:center;">
+                <svg class="fluent-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="20" height="20">
+                    <path d="M 15 3 C 12.031398 3 9.3028202 4.0834384 7.2070312 5.875 A 1.0001 1.0001 0 1 0 8.5058594 7.3945312 C 10.25407 5.9000929 12.516602 5 15 5 C 20.19656 5 24.450989 8.9379267 24.951172 14 L 22 14 L 26 20 L 30 14 L 26.949219 14 C 26.437925 7.8516588 21.277839 3 15 3 z M 4 10 L 0 16 L 3.0507812 16 C 3.562075 22.148341 8.7221607 27 15 27 C 17.968602 27 20.69718 25.916562 22.792969 24.125 A 1.0001 1.0001 0 1 0 21.494141 22.605469 C 19.74593 24.099907 17.483398 25 15 25 C 9.80344 25 5.5490109 21.062074 5.0488281 16 L 8 16 L 4 10 z" fill="none" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </button>
+        </h2>
+        <div id="results" style="margin-top:18px;"></div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>
